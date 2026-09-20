@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+
+const upcomingWorkshops = [
+  {
+    title: "Introduction to Machine Learning",
+    description: "Learn the basics of ML algorithms and build your first model using Python.",
+    date: "Oct 15, 2026",
+    time: "4:00 PM",
+    location: "Main Auditorium",
+    type: "Workshop",
+  },
+  {
+    title: "React & Next.js Fundamentals",
+    description: "Discover modern web development by building a full-stack application.",
+    date: "Oct 22, 2026",
+    time: "3:30 PM",
+    location: "Lab 204",
+    type: "Hands-on Session",
+  }
+];
+
+const pastWorkshops = [
+  {
+    title: "Git & GitHub for Beginners",
+    description: "Version control fundamentals for every developer.",
+    date: "Sep 10, 2026",
+    time: "5:00 PM",
+    location: "Online",
+    type: "Workshop",
+  },
+  {
+    title: "Python Data Analysis",
+    description: "Pandas, NumPy, and basic data visualization.",
+    date: "Aug 25, 2026",
+    time: "4:00 PM",
+    location: "Lab 201",
+    type: "Technical Session",
+  }
+];
+---
+
+<Layout title="Workshops">
+  <section class="page-hero section-alt">
+    <div class="container">
+      <h1>Workshops & Events</h1>
+      <p class="lead">Enhance your skills with hands-on sessions led by peers and industry professionals.</p>
+    </div>
+  </section>
+
+  <!-- Upcoming Workshops -->
+  <section>
+    <div class="container">
+      <SectionHeading title="Upcoming Workshops" align="left" />
+      <div class="workshops-grid">
+        {upcomingWorkshops.map(workshop => (
+          <Card>
+            <span class="badge">{workshop.type}</span>
+            <h3 class="workshop-title">{workshop.title}</h3>
+            <p class="workshop-desc">{workshop.description}</p>
+            <div class="workshop-meta">
+              <span>📅 {workshop.date}</span>
+              <span>⏰ {workshop.time}</span>
+              <span>📍 {workshop.location}</span>
+            </div>
+            <div class="workshop-action">
+              <Button text="View Details" variant="outline" class="w-full" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Past Workshops -->
+  <section class="section-alt">
+    <div class="container">
+      <SectionHeading title="Past Workshops" align="left" />
+      <div class="workshops-grid opacity-75">
+        {pastWorkshops.map(workshop => (
+          <Card hoverEffect={false}>
+            <span class="badge badge-gray">{workshop.type}</span>
+            <h3 class="workshop-title">{workshop.title}</h3>
+            <p class="workshop-desc">{workshop.description}</p>
+            <div class="workshop-meta">
+              <span>📅 {workshop.date}</span>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="text-center">
+    <div class="container">
+      <h2>Have an idea for a workshop?</h2>
+      <p style="margin-bottom: var(--space-6);">We are always looking for speakers and interesting topics.</p>
+      <Button text="Contact Us" href="/contact" variant="primary" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+  
+  .page-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .page-hero h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  .workshops-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .workshops-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .workshops-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .badge {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-4);
+    align-self: flex-start;
+  }
+  
+  .badge-gray {
+    background-color: var(--color-border);
+    color: var(--color-text);
+  }
+
+  .workshop-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .workshop-desc {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-6);
+    flex-grow: 1;
+  }
+
+  .workshop-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  
+  .workshop-action {
+    margin-top: auto;
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+
+  .opacity-75 {
+    opacity: 0.75;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+</style>

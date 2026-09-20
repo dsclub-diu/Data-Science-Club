@@ -1,0 +1,185 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+
+const values = [
+  "Curiosity",
+  "Collaboration",
+  "Innovation",
+  "Learning",
+  "Responsibility",
+  "Community"
+];
+---
+
+<Layout title="About Us">
+  <!-- Hero Section -->
+  <section class="page-hero section-alt">
+    <div class="container">
+      <h1>About Data Science Club</h1>
+      <p class="lead">A student-driven technology community where curiosity meets innovation.</p>
+    </div>
+  </section>
+
+  <!-- Mission & Vision -->
+  <section>
+    <div class="container">
+      <div class="grid-2">
+        <div class="text-content">
+          <SectionHeading title="Our Mission" align="left" />
+          <p>We create opportunities for students to:</p>
+          <ul class="bullet-list">
+            <li>Learn emerging technologies through peer-driven education.</li>
+            <li>Build practical projects that solve real-world problems.</li>
+            <li>Research new ideas and publish findings.</li>
+            <li>Collaborate across disciplines and skill levels.</li>
+            <li>Contribute back to the university and wider tech community.</li>
+          </ul>
+        </div>
+        <div class="text-content">
+          <SectionHeading title="Our Vision" align="left" />
+          <p class="vision-text">To build a technology community where students turn curiosity into practical skills, meaningful projects, foundational research, and lasting innovation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do -->
+  <section class="section-alt">
+    <div class="container">
+      <SectionHeading title="What We Do" />
+      <div class="grid-list">
+        <Card><h3 class="item-title">Workshops</h3><p>Hands-on skill building.</p></Card>
+        <Card><h3 class="item-title">Technical Sessions</h3><p>Deep dives into specific tech topics.</p></Card>
+        <Card><h3 class="item-title">Projects</h3><p>Collaborative software and data solutions.</p></Card>
+        <Card><h3 class="item-title">Competitions</h3><p>Hackathons and coding challenges.</p></Card>
+        <Card><h3 class="item-title">Research Activities</h3><p>Exploring and writing papers.</p></Card>
+        <Card><h3 class="item-title">Community Events</h3><p>Networking and social bonding.</p></Card>
+        <Card><h3 class="item-title">Industry Collaboration</h3><p>Connecting with the real world.</p></Card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section>
+    <div class="container">
+      <SectionHeading title="Our Core Values" />
+      <div class="values-grid">
+        {values.map(value => (
+          <div class="value-card">
+            <h3>{value}</h3>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="section-alt text-center">
+    <div class="container">
+      <h2>Ready to start your journey?</h2>
+      <p style="margin-bottom: var(--space-6);">Become a Full Member to access all our resources and community.</p>
+      <Button text="Apply for Full Membership" href="/join-us" variant="primary" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+  
+  .page-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .page-hero h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  .text-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bullet-list {
+    list-style-type: disc;
+    padding-left: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .vision-text {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-weight: 500;
+  }
+
+  .grid-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .item-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .values-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .value-card {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .value-card h3 {
+    color: white;
+    margin: 0;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+</style>

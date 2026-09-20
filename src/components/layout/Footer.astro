@@ -1,0 +1,118 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="logo-text">Data Science Club</a>
+      <p class="footer-desc">Student-driven community exploring data science, AI, software engineering, and technology.</p>
+    </div>
+    
+    <div class="footer-links">
+      <div class="link-group">
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/workshops">Workshops</a></li>
+          <li><a href="/partners">Partners</a></li>
+        </ul>
+      </div>
+      
+      <div class="link-group">
+        <h3>Connect</h3>
+        <ul>
+          <li><a href="/join-us">Join Us</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="#">LinkedIn (Placeholder)</a></li>
+          <li><a href="#">GitHub (Placeholder)</a></li>
+        </ul>
+      </div>
+      
+      <div class="link-group">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; {year} Data Science Club Executive Committee. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-secondary);
+    color: #fff;
+    padding-top: var(--space-16);
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+    margin-bottom: var(--space-16);
+  }
+
+  @media (min-width: 768px) {
+    .footer-inner {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+
+  .logo-text {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: var(--space-4);
+    display: inline-block;
+  }
+
+  .footer-desc {
+    color: var(--color-text-light);
+    max-width: 300px;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-8);
+  }
+
+  .link-group h3 {
+    color: #fff;
+    font-size: 1.125rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .link-group ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .link-group a {
+    color: var(--color-text-light);
+    transition: color var(--transition-fast);
+  }
+
+  .link-group a:hover {
+    color: #fff;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: var(--space-6) 0;
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+  }
+</style>

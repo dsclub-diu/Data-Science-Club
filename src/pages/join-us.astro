@@ -1,0 +1,228 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+
+const exploreItems = [
+  "Technical Skills",
+  "Projects",
+  "Research",
+  "Competitions",
+  "Events",
+  "Networking",
+  "Leadership",
+  "Creative & Media Activities"
+];
+---
+
+<Layout title="Join Us">
+  <section class="page-hero">
+    <div class="container">
+      <span class="hero-eyebrow">Membership</span>
+      <h1>Become a Full Member</h1>
+      <p class="lead">Join a community of students who want to learn, build, participate, research, and contribute.</p>
+    </div>
+  </section>
+
+  <!-- What Members Can Explore -->
+  <section class="section-alt">
+    <div class="container">
+      <SectionHeading title="What You Can Explore" subtitle="Full Membership gives you access to a wide variety of opportunities." />
+      
+      <div class="explore-grid">
+        {exploreItems.map(item => (
+          <Card hoverEffect={true} class="explore-card">
+            <h3 class="explore-title">{item}</h3>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Membership Process -->
+  <section>
+    <div class="container process-container">
+      <SectionHeading title="Membership Process" subtitle="How to join the Data Science Club" />
+      
+      <div class="process-steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Submit Application</h3>
+            <p>Fill out the Full Membership form with your details and interests.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Verify Email</h3>
+            <p>Confirm your university email address via OTP.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Admin Review</h3>
+            <p>Our team reviews your application details.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Membership Approval</h3>
+            <p>You will receive a confirmation email upon approval.</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h3>Receive Member ID</h3>
+            <p>Your unique Member ID grants you access to all club resources.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="process-cta text-center">
+        <Button text="Start Full Membership Application" href="/join-us/apply" variant="primary" />
+        <p class="note">Note: Application portal is currently under development (Phase 2).</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+  
+  .hero-eyebrow {
+    display: block;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+  }
+
+  .page-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .page-hero h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  .explore-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 600px) {
+    .explore-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .explore-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .explore-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-6);
+  }
+
+  .explore-title {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .process-container {
+    max-width: 800px;
+  }
+
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    margin: var(--space-12) 0;
+    position: relative;
+  }
+
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-border);
+    z-index: 0;
+  }
+
+  .step {
+    display: flex;
+    gap: var(--space-6);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.25rem;
+  }
+  
+  .step-content p {
+    color: var(--color-text-light);
+  }
+
+  .process-cta {
+    margin-top: var(--space-12);
+  }
+
+  .note {
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+</style>

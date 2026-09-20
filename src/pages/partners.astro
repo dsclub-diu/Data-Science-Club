@@ -1,0 +1,159 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+
+const partners = [
+  {
+    name: "Tech Corp Inc.",
+    logo: "🏢",
+    description: "Supporting student initiatives and providing mentorship.",
+    website: "#"
+  },
+  {
+    name: "University Research Lab",
+    logo: "🔬",
+    description: "Collaborating on emerging AI and data science research.",
+    website: "#"
+  },
+  {
+    name: "Open Source Foundation",
+    logo: "🌐",
+    description: "Providing resources for open source project development.",
+    website: "#"
+  },
+  {
+    name: "Innovation Hub",
+    logo: "💡",
+    description: "Startup incubator for student-led technical projects.",
+    website: "#"
+  }
+];
+---
+
+<Layout title="Partners">
+  <section class="page-hero section-alt">
+    <div class="container">
+      <h1>Our Partners & Collaborators</h1>
+      <p class="lead">We work with industry and academic leaders to provide the best opportunities for our members.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="partners-grid">
+        {partners.map(partner => (
+          <Card class="partner-card">
+            <div class="partner-logo">{partner.logo}</div>
+            <h3 class="partner-name">{partner.name}</h3>
+            <p class="partner-desc">{partner.description}</p>
+            {partner.website && (
+              <div class="partner-link">
+                <a href={partner.website} class="link-styled">Visit Website →</a>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-alt text-center">
+    <div class="container">
+      <h2>Interested in partnering with us?</h2>
+      <p style="margin-bottom: var(--space-6);">We are open to sponsorships, mentorship programs, and joint events.</p>
+      <Button text="Contact for Collaboration" href="/contact" variant="primary" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+  
+  .page-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-4);
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .page-hero h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  .partners-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 600px) {
+    .partners-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .partners-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .partner-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .partner-logo {
+    font-size: 4rem;
+    margin-bottom: var(--space-4);
+    background: var(--color-bg);
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+  }
+
+  .partner-name {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .partner-desc {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-4);
+    flex-grow: 1;
+  }
+
+  .partner-link {
+    margin-top: auto;
+  }
+
+  .link-styled {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  
+  .link-styled:hover {
+    text-decoration: underline;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+</style>

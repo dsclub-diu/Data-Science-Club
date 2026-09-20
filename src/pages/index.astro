@@ -1,0 +1,387 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/Button.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Card from '../components/ui/Card.astro';
+
+const interests = [
+  "Artificial Intelligence & Data Science",
+  "Software Engineering & Programming",
+  "Web & App Development",
+  "Cybersecurity",
+  "Cloud Computing & DevOps",
+  "Robotics & Automation",
+  "Game Development",
+  "UI/UX & Product Design",
+  "Research",
+  "Entrepreneurship & Startups"
+];
+
+const workshopsPreview = [
+  {
+    title: "Introduction to Machine Learning",
+    description: "Learn the basics of ML algorithms and build your first model using Python.",
+    date: "Oct 15, 2026",
+    time: "4:00 PM",
+    location: "Main Auditorium",
+    type: "Workshop",
+  },
+  {
+    title: "React & Next.js Fundamentals",
+    description: "Discover modern web development by building a full-stack application.",
+    date: "Oct 22, 2026",
+    time: "3:30 PM",
+    location: "Lab 204",
+    type: "Hands-on Session",
+  }
+];
+---
+
+<Layout title="Home">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <span class="hero-eyebrow">Data Science Club</span>
+        <h1 class="hero-title">Learn. Build.<br/><span class="text-primary">Grow Together.</span></h1>
+        <p class="hero-desc">Student-driven community exploring data science, artificial intelligence, software engineering, research, innovation, and technology.</p>
+        <div class="hero-actions">
+          <Button text="Join Us" href="/join-us" variant="primary" />
+          <Button text="Explore Workshops" href="/workshops" variant="outline" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Do Section -->
+  <section class="section-alt">
+    <div class="container">
+      <SectionHeading title="What We Do" subtitle="Turning curiosity into practical skills through hands-on learning and collaboration." />
+      
+      <div class="grid-4">
+        <Card>
+          <h3 class="card-title">Learn</h3>
+          <p>Workshops, technical sessions, knowledge sharing, and peer learning.</p>
+        </Card>
+        <Card>
+          <h3 class="card-title">Build</h3>
+          <p>Projects, competitions, hackathons, and practical experimentation.</p>
+        </Card>
+        <Card>
+          <h3 class="card-title">Research</h3>
+          <p>Explore emerging technologies and research opportunities.</p>
+        </Card>
+        <Card>
+          <h3 class="card-title">Connect</h3>
+          <p>Meet students, mentors, professionals, researchers, and industry communities.</p>
+        </Card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Areas of Interest Section -->
+  <section>
+    <div class="container">
+      <SectionHeading title="Areas of Interest" subtitle="Explore diverse fields of technology with our specialized focus groups." />
+      
+      <div class="tags-container">
+        {interests.map(interest => (
+          <span class="tag">{interest}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Workshops Preview -->
+  <section class="section-alt">
+    <div class="container">
+      <SectionHeading title="Upcoming Workshops" subtitle="Join our technical sessions and expand your skill set." />
+      
+      <div class="grid-2">
+        {workshopsPreview.map(workshop => (
+          <Card>
+            <span class="badge">{workshop.type}</span>
+            <h3 class="workshop-title">{workshop.title}</h3>
+            <p class="workshop-desc">{workshop.description}</p>
+            <div class="workshop-meta">
+              <span class="meta-item">📅 {workshop.date}</span>
+              <span class="meta-item">⏰ {workshop.time}</span>
+              <span class="meta-item">📍 {workshop.location}</span>
+            </div>
+          </Card>
+        ))}
+      </div>
+      
+      <div class="center-action">
+        <Button text="View All Workshops" href="/workshops" variant="outline" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Join Section -->
+  <section>
+    <div class="container">
+      <SectionHeading title="Why Join Us?" />
+      
+      <div class="benefits-grid">
+        <ul class="benefits-list">
+          <li>✓ Learn technical skills</li>
+          <li>✓ Build projects</li>
+          <li>✓ Participate in competitions</li>
+          <li>✓ Explore research</li>
+        </ul>
+        <ul class="benefits-list">
+          <li>✓ Develop technical and creative skills</li>
+          <li>✓ Network with peers</li>
+          <li>✓ Explore career opportunities</li>
+          <li>✓ Contribute to the community</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Impact Section -->
+  <section class="section-alt">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">Growing</div>
+          <div class="stat-label">Community</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Regular</div>
+          <div class="stat-label">Workshops</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Student</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Industry</div>
+          <div class="stat-label">Connections</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="container center-text">
+      <h2>Ready to be part of the community?</h2>
+      <p>Join the Data Science Club and learn, build, research, and grow with a community of students passionate about technology.</p>
+      <Button text="Apply for Full Membership" href="/join-us" variant="primary" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    padding: var(--space-20) 0;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-inner {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: block;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .hero-title {
+      font-size: 4.5rem;
+    }
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .hero-desc {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--space-8);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-10);
+  }
+
+  @media (min-width: 768px) {
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  .tag {
+    background-color: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-2xl);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-4);
+    align-self: flex-start;
+  }
+
+  .workshop-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .workshop-desc {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-6);
+    flex-grow: 1;
+  }
+
+  .workshop-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+  }
+
+  .center-action {
+    display: flex;
+    justify-content: center;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .benefits-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .benefits-list li {
+    font-size: 1.125rem;
+    color: var(--color-text);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    margin-bottom: var(--space-2);
+  }
+
+  .stat-label {
+    color: var(--color-text-light);
+    font-weight: 500;
+  }
+
+  .final-cta {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+
+  .final-cta h2 {
+    color: white;
+    margin-bottom: var(--space-4);
+  }
+
+  .final-cta p {
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto var(--space-8);
+  }
+
+  .center-text {
+    text-align: center;
+  }
+</style>
