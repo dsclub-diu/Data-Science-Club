@@ -1,0 +1,152 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../services/auth/admin';
+import { db } from '../../../db';
+import { members, applications } from '../../../db/schema';
+import { desc, eq, and, like } from 'drizzle-orm';
+
+const token = Astro.cookies.get('admin_session')?.value;
+if (!token) return Astro.redirect('/admin/login');
+const admin = await verifyAdminSession(token);
+if (!admin) return Astro.redirect('/admin/login');
+
+const url = new URL(Astro.request.url);
+const searchFilter = url.searchParams.get('search');
+
+let query = db.select({
+  id: members.id,
+  name: applications.name,
+  student_id: applications.student_id,
+  department: applications.department,
+  batch: applications.batch,
+  university_email: applications.university_email,
+  joined_at: members.joined_at,
+  status: members.status
+}).from(members).innerJoin(applications, eq(members.application_id, applications.id));
+
+if (searchFilter) {
+  query = query.where(like(applications.name, `%${searchFilter}%`));
+}
+
+const membersList = query.orderBy(desc(members.joined_at)).all();
+---
+
+<AdminLayout title="Active Members">
+  <div class="page-header">
+    <h1>Active Members</h1>
+  </div>
+
+  <div class="filter-bar card">
+    <form class="filters">
+      <input type="text" name="search" placeholder="Search by name..." value={searchFilter || ''} />
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/admin/members" class="btn btn-secondary">Clear</a>
+    </form>
+  </div>
+
+  <div class="table-container card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Member ID / Name</th>
+          <th>Student ID</th>
+          <th>Department</th>
+          <th>Batch</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {membersList.length === 0 ? (
+          <tr>
+            <td colspan="7" class="text-center py-4">No members found.</td>
+          </tr>
+        ) : (
+          membersList.map(member => (
+            <tr>
+              <td>
+                <div class="fw-bold">{member.name}</div>
+                <div class="text-sm text-light">{member.id}</div>
+              </td>
+              <td>{member.student_id}</td>
+              <td>{member.department}</td>
+              <td>{member.batch}</td>
+              <td>{new Date(member.joined_at).toLocaleDateString()}</td>
+              <td>
+                <span class="badge badge-success">{member.status}</span>
+              </td>
+              <td>
+                <a href={`/admin/members/${member.id}`} class="btn-link">View</a>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+  .card {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  .filters {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .filters input {
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .table-container {
+    overflow-x: auto;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table th, .table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .table th {
+    font-weight: 600;
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+  }
+  .fw-bold { font-weight: 600; }
+  .text-sm { font-size: 0.875rem; }
+  .text-light { color: var(--color-text-light); }
+  .text-center { text-align: center; }
+  .py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+  
+  .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-success { background-color: #bbf7d0; color: #166534; }
+  
+  .btn-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+</style>

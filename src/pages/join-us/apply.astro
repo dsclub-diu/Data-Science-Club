@@ -1,0 +1,629 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import Button from '../../components/ui/Button.astro';
+import Card from '../../components/ui/Card.astro';
+---
+
+<Layout title="Apply for Full Membership">
+  <section class="page-hero">
+    <div class="container">
+      <span class="hero-eyebrow">Membership</span>
+      <h1>Full Membership Application</h1>
+      <p class="lead">Complete the form below to join the Data Science Club.</p>
+    </div>
+  </section>
+
+  <section class="section-alt">
+    <div class="container process-container">
+      <div id="form-container">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="step-indicator" id="step-indicator">Step 1 of 9</div>
+        
+        <form id="membership-form">
+          <!-- Step 1: Personal Information -->
+          <div class="form-step active" data-step="1">
+            <h2>1. Personal Information</h2>
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="student_id">Student ID *</label>
+              <input type="text" id="student_id" name="student_id" required />
+            </div>
+            <div class="form-group">
+              <label for="university_email">University Email *</label>
+              <input type="email" id="university_email" name="university_email" required />
+            </div>
+            <div class="form-group">
+              <label for="personal_email">Personal Email (Optional)</label>
+              <input type="email" id="personal_email" name="personal_email" />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" name="phone" required placeholder="01XXXXXXXXX" />
+            </div>
+          </div>
+
+          <!-- Step 2: Academic Information -->
+          <div class="form-step" data-step="2">
+            <h2>2. Academic Information</h2>
+            <div class="form-group">
+              <label for="department">Department *</label>
+              <input type="text" id="department" name="department" required />
+            </div>
+            <div class="form-group">
+              <label for="batch">Batch / Admission Year *</label>
+              <input type="text" id="batch" name="batch" required />
+            </div>
+            <div class="form-group">
+              <label for="current_semester">Current Semester *</label>
+              <input type="text" id="current_semester" name="current_semester" required />
+            </div>
+            <div class="form-group">
+              <label for="expected_graduation_year">Expected Graduation Year *</label>
+              <input type="number" id="expected_graduation_year" name="expected_graduation_year" required min="2020" max="2035" />
+            </div>
+            <div class="form-group">
+              <label for="cgpa_current">Current CGPA (Optional)</label>
+              <input type="number" id="cgpa_current" name="cgpa_current" step="0.01" min="0" max="4.00" />
+            </div>
+            <div class="form-group">
+              <label for="cgpa_desired">Desired CGPA (Optional)</label>
+              <input type="number" id="cgpa_desired" name="cgpa_desired" step="0.01" min="0" max="4.00" />
+            </div>
+          </div>
+
+          <!-- Step 3: Academic Interests -->
+          <div class="form-step" data-step="3">
+            <h2>3. Academic Interests</h2>
+            <p>Select all that apply.</p>
+            <div class="checkbox-group" id="academic_interests_group">
+              <label><input type="checkbox" name="academic_interests" value="Artificial Intelligence & Data Science" /> Artificial Intelligence & Data Science</label>
+              <label><input type="checkbox" name="academic_interests" value="Software Engineering & Programming" /> Software Engineering & Programming</label>
+              <label><input type="checkbox" name="academic_interests" value="Web & App Development" /> Web & App Development</label>
+              <label><input type="checkbox" name="academic_interests" value="Cybersecurity" /> Cybersecurity</label>
+              <label><input type="checkbox" name="academic_interests" value="Cloud Computing & DevOps" /> Cloud Computing & DevOps</label>
+              <label><input type="checkbox" name="academic_interests" value="Robotics & Automation" /> Robotics & Automation</label>
+              <label><input type="checkbox" name="academic_interests" value="Game Development" /> Game Development</label>
+              <label><input type="checkbox" name="academic_interests" value="UI/UX & Product Design" /> UI/UX & Product Design</label>
+              <label><input type="checkbox" name="academic_interests" value="Research" /> Research</label>
+              <label><input type="checkbox" name="academic_interests" value="Entrepreneurship & Startups" /> Entrepreneurship & Startups</label>
+              <label><input type="checkbox" name="academic_interests" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="academic_interests_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="academic_interests" value="None" class="exclusive-none" /> None</label>
+            </div>
+          </div>
+
+          <!-- Step 4: Technical Skills -->
+          <div class="form-step" data-step="4">
+            <h2>4. Technical Skills</h2>
+            <div class="form-group checkbox-group" id="technical_skills_group">
+              <label><strong>Which technical skills do you have?</strong></label>
+              <label><input type="checkbox" name="technical_skills" value="Programming" /> Programming</label>
+              <label><input type="checkbox" name="technical_skills" value="Data & AI" /> Data & AI</label>
+              <label><input type="checkbox" name="technical_skills" value="Web & App Development" /> Web & App Development</label>
+              <label><input type="checkbox" name="technical_skills" value="Cloud & DevOps" /> Cloud & DevOps</label>
+              <label><input type="checkbox" name="technical_skills" value="Robotics & Automation" /> Robotics & Automation</label>
+              <label><input type="checkbox" name="technical_skills" value="Cybersecurity" /> Cybersecurity</label>
+              <label><input type="checkbox" name="technical_skills" value="UI/UX Design" /> UI/UX Design</label>
+              <label><input type="checkbox" name="technical_skills" value="Git & Version Control" /> Git & Version Control</label>
+              <label><input type="checkbox" name="technical_skills" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="technical_skills_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="technical_skills" value="None" class="exclusive-none" /> None</label>
+            </div>
+            <div class="form-group">
+              <label for="technical_skill_level"><strong>Overall Technical Skill Level</strong></label>
+              <select id="technical_skill_level" name="technical_skill_level">
+                <option value="">Select level...</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="None">None</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="strongest_technical_skill"><strong>Strongest Technical Skill</strong></label>
+              <select id="strongest_technical_skill" name="strongest_technical_skill">
+                <option value="">Select strongest skill...</option>
+                <!-- Populated dynamically based on technical_skills -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 5: Creative & Media Skills -->
+          <div class="form-step" data-step="5">
+            <h2>5. Creative & Media Skills</h2>
+            <div class="form-group checkbox-group" id="creative_media_skills_group">
+              <label><strong>Which creative/media skills do you have?</strong></label>
+              <label><input type="checkbox" name="creative_media_skills" value="Graphic Design — Canva / Photoshop / Illustrator" /> Graphic Design — Canva / Photoshop / Illustrator</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Video Editing" /> Video Editing</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Content Writing" /> Content Writing</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Motion Graphics" /> Motion Graphics</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Photography & Videography" /> Photography & Videography</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Social Media Content" /> Social Media Content</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Presentation Design" /> Presentation Design</label>
+              <label><input type="checkbox" name="creative_media_skills" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="creative_media_skills_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="creative_media_skills" value="None" class="exclusive-none" /> None</label>
+            </div>
+          </div>
+
+          <!-- Step 6: Goals & Experience -->
+          <div class="form-step" data-step="6">
+            <h2>6. Goals & Experience</h2>
+            <div class="form-group checkbox-group" id="goals_group">
+              <label><strong>What do you want to achieve through the club?</strong></label>
+              <label><input type="checkbox" name="goals" value="Learn Technical Skills" /> Learn Technical Skills</label>
+              <label><input type="checkbox" name="goals" value="Build Projects" /> Build Projects</label>
+              <label><input type="checkbox" name="goals" value="Participate in Hackathons / Competitions" /> Participate in Hackathons / Competitions</label>
+              <label><input type="checkbox" name="goals" value="Research" /> Research</label>
+              <label><input type="checkbox" name="goals" value="Career Preparation" /> Career Preparation</label>
+              <label><input type="checkbox" name="goals" value="Internship / Job Preparation" /> Internship / Job Preparation</label>
+              <label><input type="checkbox" name="goals" value="Entrepreneurship / Startup" /> Entrepreneurship / Startup</label>
+              <label><input type="checkbox" name="goals" value="Networking" /> Networking</label>
+              <label><input type="checkbox" name="goals" value="Leadership" /> Leadership</label>
+              <label><input type="checkbox" name="goals" value="Freelancing" /> Freelancing</label>
+              <label><input type="checkbox" name="goals" value="Higher Studies" /> Higher Studies</label>
+              <label><input type="checkbox" name="goals" value="Teaching / Mentoring" /> Teaching / Mentoring</label>
+              <label><input type="checkbox" name="goals" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="goals_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="goals" value="None" class="exclusive-none" /> None</label>
+            </div>
+            
+            <div class="form-group checkbox-group" id="previous_experience_group">
+              <label><strong>Previous Experience (Select all that apply)</strong></label>
+              <label><input type="checkbox" name="previous_experience" value="Hackathon" /> Hackathon</label>
+              <label><input type="checkbox" name="previous_experience" value="Programming Contest" /> Programming Contest</label>
+              <label><input type="checkbox" name="previous_experience" value="Research Project" /> Research Project</label>
+              <label><input type="checkbox" name="previous_experience" value="Personal Project" /> Personal Project</label>
+              <label><input type="checkbox" name="previous_experience" value="Open-source Project" /> Open-source Project</label>
+              <label><input type="checkbox" name="previous_experience" value="Workshop / Conference" /> Workshop / Conference</label>
+              <label><input type="checkbox" name="previous_experience" value="Club / Organizational Activity" /> Club / Organizational Activity</label>
+              <label><input type="checkbox" name="previous_experience" value="Startup / Business Project" /> Startup / Business Project</label>
+              <label><input type="checkbox" name="previous_experience" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="previous_experience_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="previous_experience" value="None" class="exclusive-none" /> None</label>
+            </div>
+          </div>
+
+          <!-- Step 7: Club Contribution -->
+          <div class="form-step" data-step="7">
+            <h2>7. Club Contribution</h2>
+            <div class="form-group checkbox-group" id="club_contributions_group">
+              <label><strong>How would you like to contribute to the club?</strong></label>
+              <label><input type="checkbox" name="club_contributions" value="Technical Team" /> Technical Team</label>
+              <label><input type="checkbox" name="club_contributions" value="Event Management" /> Event Management</label>
+              <label><input type="checkbox" name="club_contributions" value="Research" /> Research</label>
+              <label><input type="checkbox" name="club_contributions" value="Content Writing" /> Content Writing</label>
+              <label><input type="checkbox" name="club_contributions" value="Video Editing" /> Video Editing</label>
+              <label><input type="checkbox" name="club_contributions" value="Graphic Design" /> Graphic Design</label>
+              <label><input type="checkbox" name="club_contributions" value="Social Media" /> Social Media</label>
+              <label><input type="checkbox" name="club_contributions" value="Marketing" /> Marketing</label>
+              <label><input type="checkbox" name="club_contributions" value="Sponsorship / Business Development" /> Sponsorship / Business Development</label>
+              <label><input type="checkbox" name="club_contributions" value="Volunteer" /> Volunteer</label>
+              <label><input type="checkbox" name="club_contributions" value="Mentoring" /> Mentoring</label>
+              <label><input type="checkbox" name="club_contributions" value="Leadership" /> Leadership</label>
+              <label><input type="checkbox" name="club_contributions" value="Other" class="other-trigger" /> Other</label>
+              <input type="text" id="club_contributions_other" class="other-input hidden" placeholder="Please specify..." />
+              <label><input type="checkbox" name="club_contributions" value="Not Sure Yet" /> Not Sure Yet</label>
+              <label><input type="checkbox" name="club_contributions" value="None" class="exclusive-none" /> None</label>
+            </div>
+            
+            <div class="form-group">
+              <label for="additional_information"><strong>Anything else you'd like us to know?</strong> (Optional)</label>
+              <textarea id="additional_information" name="additional_information" rows="4"></textarea>
+            </div>
+          </div>
+
+          <!-- Step 8: Membership Payment -->
+          <div class="form-step" data-step="8">
+            <h2>8. Membership Payment</h2>
+            <p>Please complete your payment before proceeding.</p>
+            <div class="form-group">
+              <label for="bkash_number">bKash Number Used for Payment *</label>
+              <input type="text" id="bkash_number" name="bkash_number" placeholder="01XXXXXXXXX" required />
+            </div>
+            <div class="form-group">
+              <label for="transaction_id">Transaction ID *</label>
+              <input type="text" id="transaction_id" name="transaction_id" placeholder="XXXXXXXXXX" required />
+            </div>
+            <div class="form-group">
+              <label for="transaction_reference">Transaction Number / Reference *</label>
+              <input type="text" id="transaction_reference" name="transaction_reference" placeholder="XXXXXXXXXX" required />
+            </div>
+          </div>
+
+          <!-- Step 9: Review & Submit -->
+          <div class="form-step" data-step="9">
+            <h2>9. Review & Submit</h2>
+            <div id="review-container">
+              <!-- JS will populate this -->
+            </div>
+            <div class="form-group checkbox-group">
+              <label><input type="checkbox" id="confirm_accuracy" required /> I confirm that the information provided is accurate.</label>
+            </div>
+            <div id="submit-error" class="error-msg hidden"></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="prev-btn" class="btn btn-secondary hidden">Back</button>
+            <button type="button" id="next-btn" class="btn btn-primary">Next</button>
+            <button type="submit" id="submit-btn" class="btn btn-primary hidden">Submit Application</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-8) 0;
+  }
+  .process-container {
+    max-width: 800px;
+  }
+  #form-container {
+    background: var(--color-bg-alt);
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background-color: var(--color-primary);
+    width: 11.11%;
+    transition: width 0.3s ease;
+  }
+  .step-indicator {
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    margin-bottom: var(--space-6);
+  }
+  .form-step {
+    display: none;
+  }
+  .form-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+  .form-group {
+    margin-bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+  }
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="tel"],
+  .form-group input[type="number"],
+  .form-group select,
+  .form-group textarea {
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  .checkbox-group label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .hidden {
+    display: none !important;
+  }
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .btn {
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+  }
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+  .btn-secondary {
+    background-color: var(--color-border);
+    color: var(--color-text);
+  }
+  .review-section {
+    margin-bottom: var(--space-6);
+  }
+  .review-section h3 {
+    margin-bottom: var(--space-2);
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    display: flex;
+    justify-content: space-between;
+  }
+  .review-item {
+    margin-bottom: var(--space-1);
+  }
+  .error-msg {
+    color: red;
+    margin-top: var(--space-2);
+  }
+  .edit-link {
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 9;
+  
+  const form = document.getElementById('membership-form');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const submitBtn = document.getElementById('submit-btn');
+  const progressBar = document.getElementById('progress-bar');
+  const stepIndicator = document.getElementById('step-indicator');
+  const reviewContainer = document.getElementById('review-container');
+  const submitError = document.getElementById('submit-error');
+
+  function updateUI() {
+    document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+    document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+    
+    progressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
+    stepIndicator.textContent = `Step ${currentStep} of ${totalSteps}`;
+    
+    if (currentStep === 1) {
+      prevBtn.classList.add('hidden');
+    } else {
+      prevBtn.classList.remove('hidden');
+    }
+    
+    if (currentStep === totalSteps) {
+      nextBtn.classList.add('hidden');
+      submitBtn.classList.remove('hidden');
+      populateReview();
+    } else {
+      nextBtn.classList.remove('hidden');
+      submitBtn.classList.add('hidden');
+    }
+    
+    window.scrollTo(0, 0);
+  }
+
+  // Handle exclusive 'None' and 'Other' toggles
+  document.querySelectorAll('.checkbox-group').forEach(group => {
+    const noneCb = group.querySelector('.exclusive-none');
+    const otherCb = group.querySelector('.other-trigger');
+    const otherInput = group.querySelector('.other-input');
+    const allCbs = group.querySelectorAll('input[type="checkbox"]:not(.exclusive-none)');
+    
+    if (noneCb) {
+      noneCb.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          allCbs.forEach(cb => { cb.checked = false; });
+          if(otherInput) otherInput.classList.add('hidden');
+        }
+      });
+      allCbs.forEach(cb => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) { noneCb.checked = false; }
+        });
+      });
+    }
+    
+    if (otherCb && otherInput) {
+      otherCb.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          otherInput.classList.remove('hidden');
+          otherInput.required = true;
+        } else {
+          otherInput.classList.add('hidden');
+          otherInput.required = false;
+          otherInput.value = '';
+        }
+      });
+    }
+  });
+
+  // Dynamic strongest skill population
+  const techSkillsCbs = document.querySelectorAll('#technical_skills_group input[type="checkbox"]:not(.exclusive-none):not(.other-trigger)');
+  const techSkillsOtherCb = document.querySelector('#technical_skills_group .other-trigger');
+  const strongestSkillSelect = document.getElementById('strongest_technical_skill');
+  
+  function updateStrongestSkills() {
+    const selected = [];
+    techSkillsCbs.forEach(cb => { if(cb.checked) selected.push(cb.value); });
+    if(techSkillsOtherCb && techSkillsOtherCb.checked) selected.push("Other");
+    
+    const currentVal = strongestSkillSelect.value;
+    strongestSkillSelect.innerHTML = '<option value="">Select strongest skill...</option>';
+    
+    if (selected.length > 0) {
+      selected.forEach(skill => {
+        const opt = document.createElement('option');
+        opt.value = skill;
+        opt.textContent = skill;
+        strongestSkillSelect.appendChild(opt);
+      });
+      const optNone = document.createElement('option');
+      optNone.value = 'None';
+      optNone.textContent = 'None';
+      strongestSkillSelect.appendChild(optNone);
+      
+      if(selected.includes(currentVal) || currentVal === 'None') {
+        strongestSkillSelect.value = currentVal;
+      }
+    }
+  }
+  
+  document.querySelectorAll('#technical_skills_group input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', updateStrongestSkills);
+  });
+
+  // Navigation
+  nextBtn.addEventListener('click', () => {
+    // Basic validation
+    const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+    const inputs = currentStepEl.querySelectorAll('input[required], select[required], textarea[required]');
+    let valid = true;
+    inputs.forEach(input => {
+      if (!input.checkValidity()) {
+        input.reportValidity();
+        valid = false;
+      }
+    });
+    
+    if (valid && currentStep < totalSteps) {
+      currentStep++;
+      updateUI();
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentStep > 1) {
+      currentStep--;
+      updateUI();
+    }
+  });
+
+  // Generate Review Step
+  function populateReview() {
+    const formData = new FormData(form);
+    reviewContainer.innerHTML = '';
+    
+    const sections = [
+      { step: 1, title: 'Personal Information', keys: ['name', 'student_id', 'university_email', 'personal_email', 'phone'] },
+      { step: 2, title: 'Academic Information', keys: ['department', 'batch', 'current_semester', 'expected_graduation_year', 'cgpa_current', 'cgpa_desired'] },
+      { step: 3, title: 'Academic Interests', keys: ['academic_interests', 'academic_interests_other'], isArray: true },
+      { step: 4, title: 'Technical Skills', keys: ['technical_skills', 'technical_skills_other', 'technical_skill_level', 'strongest_technical_skill'], isArray: true },
+      { step: 5, title: 'Creative & Media Skills', keys: ['creative_media_skills', 'creative_media_skills_other'], isArray: true },
+      { step: 6, title: 'Goals & Experience', keys: ['goals', 'goals_other', 'previous_experience', 'previous_experience_other'], isArray: true },
+      { step: 7, title: 'Club Contribution', keys: ['club_contributions', 'club_contributions_other', 'additional_information'], isArray: true },
+      { step: 8, title: 'Payment', keys: ['bkash_number', 'transaction_id', 'transaction_reference'] }
+    ];
+
+    sections.forEach(sec => {
+      const secDiv = document.createElement('div');
+      secDiv.className = 'review-section';
+      secDiv.innerHTML = `<h3>${sec.title} <span class="edit-link" data-step="${sec.step}">Edit</span></h3>`;
+      
+      sec.keys.forEach(key => {
+        if (key.endsWith('_other')) return; // handled with main key
+        
+        let val;
+        if (sec.isArray && formData.getAll(key).length > 0) {
+          const values = formData.getAll(key);
+          if (values.includes('Other')) {
+            const otherVal = formData.get(`${key}_other`);
+            const idx = values.indexOf('Other');
+            values[idx] = `Other (${otherVal})`;
+          }
+          val = values.join(', ');
+        } else {
+          val = formData.get(key);
+        }
+        
+        if (val) {
+          const p = document.createElement('div');
+          p.className = 'review-item';
+          p.innerHTML = `<strong>${key.replace(/_/g, ' ')}:</strong> ${val}`;
+          secDiv.appendChild(p);
+        }
+      });
+      
+      reviewContainer.appendChild(secDiv);
+    });
+    
+    document.querySelectorAll('.edit-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        currentStep = parseInt(e.target.dataset.step);
+        updateUI();
+      });
+    });
+  }
+
+  // Submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    submitError.classList.add('hidden');
+    
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Process arrays (multi-selects)
+    ['academic_interests', 'technical_skills', 'creative_media_skills', 'goals', 'previous_experience', 'club_contributions'].forEach(key => {
+      let values = formData.getAll(key);
+      if (values.includes('Other')) {
+        const idx = values.indexOf('Other');
+        values[idx] = formData.get(`${key}_other`); // Replace "Other" with actual string
+      }
+      data[key] = values;
+    });
+
+    try {
+      const res = await fetch('/api/membership/create-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await res.json();
+      
+      if (res.ok) {
+        // Redirect to verify page
+        window.location.href = `/join-us/verify?applicationId=${result.applicationId}`;
+      } else {
+        submitError.textContent = result.error || 'Submission failed. Please try again.';
+        submitError.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+      }
+    } catch (err) {
+      submitError.textContent = 'Network error. Please try again.';
+      submitError.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Application';
+    }
+  });
+
+  updateUI();
+</script>

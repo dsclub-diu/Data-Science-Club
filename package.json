@@ -13,9 +13,19 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
-    "astro": "^7.3.3"
+    "@astrojs/node": "^11.1.6",
+    "astro": "^7.3.3",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.1",
+    "drizzle-orm": "^0.45.2",
+    "jose": "^6.2.12",
+    "resend": "^6.28.1"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }

@@ -1,0 +1,174 @@
+---
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../../services/auth/admin';
+import { db } from '../../../../db';
+import { members, applications } from '../../../../db/schema';
+import { eq } from 'drizzle-orm';
+
+const token = Astro.cookies.get('admin_session')?.value;
+if (!token) return Astro.redirect('/admin/login');
+const admin = await verifyAdminSession(token);
+if (!admin) return Astro.redirect('/admin/login');
+
+const { id } = Astro.params;
+const memberData = db.select({
+  id: members.id,
+  status: members.status,
+  joined_at: members.joined_at,
+  application_id: members.application_id,
+  name: applications.name,
+  student_id: applications.student_id,
+  university_email: applications.university_email,
+  personal_email: applications.personal_email,
+  phone: applications.phone,
+  department: applications.department,
+  batch: applications.batch,
+  current_semester: applications.current_semester,
+  expected_graduation_year: applications.expected_graduation_year,
+  cgpa_current: applications.cgpa_current,
+  cgpa_desired: applications.cgpa_desired,
+  academic_interests: applications.academic_interests,
+  technical_skills: applications.technical_skills,
+  technical_skill_level: applications.technical_skill_level,
+  strongest_technical_skill: applications.strongest_technical_skill,
+  creative_media_skills: applications.creative_media_skills,
+  goals: applications.goals,
+  previous_experience: applications.previous_experience,
+  club_contributions: applications.club_contributions,
+  additional_information: applications.additional_information,
+}).from(members)
+  .innerJoin(applications, eq(members.application_id, applications.id))
+  .where(eq(members.id, id as string))
+  .get();
+
+if (!memberData) {
+  return Astro.redirect('/admin/members');
+}
+---
+
+<AdminLayout title={`Member - ${memberData.name}`}>
+  <div class="page-header">
+    <div class="header-actions">
+      <a href="/admin/members" class="btn btn-secondary">Back to List</a>
+    </div>
+    <h1>{memberData.name}</h1>
+    <div class="header-status">
+      <span class="text-sm text-light">{memberData.id}</span>
+      <span class="badge badge-success">{memberData.status}</span>
+    </div>
+  </div>
+
+  <div class="details-grid">
+    <div class="card">
+      <h3>Personal Information</h3>
+      <div class="detail-row"><span>Student ID:</span> <strong>{memberData.student_id}</strong></div>
+      <div class="detail-row"><span>University Email:</span> <strong>{memberData.university_email}</strong></div>
+      <div class="detail-row"><span>Personal Email:</span> <strong>{memberData.personal_email || '-'}</strong></div>
+      <div class="detail-row"><span>Phone:</span> <strong>{memberData.phone}</strong></div>
+    </div>
+
+    <div class="card">
+      <h3>Academic Information</h3>
+      <div class="detail-row"><span>Department:</span> <strong>{memberData.department}</strong></div>
+      <div class="detail-row"><span>Batch:</span> <strong>{memberData.batch}</strong></div>
+      <div class="detail-row"><span>Current Semester:</span> <strong>{memberData.current_semester}</strong></div>
+      <div class="detail-row"><span>Expected Graduation:</span> <strong>{memberData.expected_graduation_year}</strong></div>
+      <div class="detail-row"><span>Current CGPA:</span> <strong>{memberData.cgpa_current || '-'}</strong></div>
+      <div class="detail-row"><span>Desired CGPA:</span> <strong>{memberData.cgpa_desired || '-'}</strong></div>
+    </div>
+    
+    <div class="card full-width">
+      <h3>Interests & Skills</h3>
+      <div class="detail-row"><span>Academic Interests:</span> <strong>{(memberData.academic_interests as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Technical Skills:</span> <strong>{(memberData.technical_skills as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Tech Skill Level:</span> <strong>{memberData.technical_skill_level || '-'}</strong></div>
+      <div class="detail-row"><span>Strongest Tech Skill:</span> <strong>{memberData.strongest_technical_skill || '-'}</strong></div>
+      <div class="detail-row"><span>Creative/Media Skills:</span> <strong>{(memberData.creative_media_skills as string[] || []).join(', ') || 'None'}</strong></div>
+    </div>
+
+    <div class="card full-width">
+      <h3>Goals & Experience</h3>
+      <div class="detail-row"><span>Goals:</span> <strong>{(memberData.goals as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Previous Experience:</span> <strong>{(memberData.previous_experience as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Club Contribution:</span> <strong>{(memberData.club_contributions as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Additional Info:</span> <strong>{memberData.additional_information || '-'}</strong></div>
+    </div>
+
+    <div class="card full-width">
+      <h3>Membership Information</h3>
+      <div class="detail-row"><span>Application Ref:</span> <strong><a href={`/admin/applications/${memberData.application_id}`} class="btn-link">{memberData.application_id}</a></strong></div>
+      <div class="detail-row"><span>Joined At:</span> <strong>{new Date(memberData.joined_at).toLocaleString()}</strong></div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+  .header-actions {
+    margin-bottom: var(--space-4);
+  }
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+  .card {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+  }
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .details-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .full-width {
+      grid-column: span 2;
+    }
+  }
+  h3 {
+    margin-bottom: var(--space-4);
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-2);
+  }
+  .detail-row {
+    margin-bottom: var(--space-2);
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 600px) {
+    .detail-row {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+  .detail-row span {
+    color: var(--color-text-light);
+  }
+  
+  .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-success { background-color: #bbf7d0; color: #166534; }
+  
+  .text-sm { font-size: 0.875rem; }
+  .text-light { color: var(--color-text-light); }
+  .btn-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+</style>

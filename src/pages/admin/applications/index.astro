@@ -1,0 +1,168 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../services/auth/admin';
+import { db } from '../../../db';
+import { applications } from '../../../db/schema';
+import { desc, eq, and, like } from 'drizzle-orm';
+
+const token = Astro.cookies.get('admin_session')?.value;
+if (!token) return Astro.redirect('/admin/login');
+const admin = await verifyAdminSession(token);
+if (!admin) return Astro.redirect('/admin/login');
+
+const url = new URL(Astro.request.url);
+const statusFilter = url.searchParams.get('status');
+const searchFilter = url.searchParams.get('search');
+
+let conditions = [];
+if (statusFilter) conditions.push(eq(applications.status, statusFilter));
+if (searchFilter) conditions.push(like(applications.name, `%${searchFilter}%`));
+
+const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+const appsList = db.select()
+  .from(applications)
+  .where(whereClause)
+  .orderBy(desc(applications.created_at))
+  .all();
+
+function getStatusColor(status) {
+  switch (status) {
+    case 'PENDING_REVIEW': return 'badge-warning';
+    case 'APPROVED': return 'badge-success';
+    case 'REJECTED': return 'badge-danger';
+    case 'PENDING_EMAIL_VERIFICATION': return 'badge-neutral';
+    default: return 'badge-neutral';
+  }
+}
+---
+
+<AdminLayout title="Applications">
+  <div class="page-header">
+    <h1>Applications</h1>
+  </div>
+
+  <div class="filter-bar card">
+    <form class="filters">
+      <input type="text" name="search" placeholder="Search by name..." value={searchFilter || ''} />
+      <select name="status">
+        <option value="">All Statuses</option>
+        <option value="PENDING_REVIEW" selected={statusFilter === 'PENDING_REVIEW'}>Pending Review</option>
+        <option value="APPROVED" selected={statusFilter === 'APPROVED'}>Approved</option>
+        <option value="REJECTED" selected={statusFilter === 'REJECTED'}>Rejected</option>
+        <option value="PENDING_EMAIL_VERIFICATION" selected={statusFilter === 'PENDING_EMAIL_VERIFICATION'}>Pending Email</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/admin/applications" class="btn btn-secondary">Clear</a>
+    </form>
+  </div>
+
+  <div class="table-container card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID / Name</th>
+          <th>Student ID</th>
+          <th>Department</th>
+          <th>Batch</th>
+          <th>Submitted</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {appsList.length === 0 ? (
+          <tr>
+            <td colspan="7" class="text-center py-4">No applications found.</td>
+          </tr>
+        ) : (
+          appsList.map(app => (
+            <tr>
+              <td>
+                <div class="fw-bold">{app.name}</div>
+                <div class="text-sm text-light">{app.id}</div>
+              </td>
+              <td>{app.student_id}</td>
+              <td>{app.department}</td>
+              <td>{app.batch}</td>
+              <td>{new Date(app.created_at).toLocaleDateString()}</td>
+              <td>
+                <span class={`badge ${getStatusColor(app.status)}`}>{app.status}</span>
+              </td>
+              <td>
+                <a href={`/admin/applications/${app.id}`} class="btn-link">View</a>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+  .card {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  .filters {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .filters input, .filters select {
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .table-container {
+    overflow-x: auto;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table th, .table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .table th {
+    font-weight: 600;
+    color: var(--color-text-light);
+    font-size: 0.875rem;
+  }
+  .fw-bold { font-weight: 600; }
+  .text-sm { font-size: 0.875rem; }
+  .text-light { color: var(--color-text-light); }
+  .text-center { text-align: center; }
+  .py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+  
+  .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-warning { background-color: #fef08a; color: #854d0e; }
+  .badge-success { background-color: #bbf7d0; color: #166534; }
+  .badge-danger { background-color: #fecaca; color: #991b1b; }
+  .badge-neutral { background-color: #e2e8f0; color: #334155; }
+  
+  .btn-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+</style>

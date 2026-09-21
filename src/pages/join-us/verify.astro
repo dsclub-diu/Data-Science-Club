@@ -1,0 +1,225 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Verify Email - Data Science Club">
+  <section class="page-hero">
+    <div class="container">
+      <span class="hero-eyebrow">Verification</span>
+      <h1>Verify Your Email</h1>
+      <p class="lead">An OTP has been sent to your university email.</p>
+    </div>
+  </section>
+
+  <section class="section-alt">
+    <div class="container verify-container">
+      
+      <div id="verify-form-container" class="card-box">
+        <p>Please enter the 6-digit code we sent you.</p>
+        <form id="verify-form">
+          <div class="form-group">
+            <input type="text" id="otp" name="otp" maxlength="6" pattern="[0-9]{6}" required placeholder="123456" autocomplete="one-time-code" />
+          </div>
+          <div id="verify-error" class="error-msg hidden"></div>
+          <button type="submit" id="verify-btn" class="btn btn-primary btn-block">Verify OTP</button>
+        </form>
+
+        <div class="resend-container">
+          <button type="button" id="resend-btn" class="btn btn-secondary btn-sm" disabled>Resend Code (60s)</button>
+          <div id="resend-msg" class="success-msg hidden">Code resent successfully!</div>
+          <div id="resend-error" class="error-msg hidden"></div>
+        </div>
+      </div>
+
+      <div id="success-container" class="card-box hidden text-center">
+        <h1>🎉 Congratulations!</h1>
+        <p>Your university email has been successfully verified.</p>
+        <p>Your membership application has been submitted and is now pending admin review.</p>
+        <div class="status-badge">Status: Pending Review</div>
+        <br/>
+        <a href="/" class="btn btn-secondary">Return Home</a>
+      </div>
+
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    text-align: center;
+    padding: var(--space-8) 0;
+  }
+  .verify-container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .card-box {
+    background: var(--color-bg-alt);
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .form-group {
+    margin: var(--space-4) 0;
+  }
+  .form-group input {
+    width: 100%;
+    padding: var(--space-3);
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .btn-block {
+    width: 100%;
+    padding: var(--space-3);
+    font-size: 1.1rem;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+  .btn-sm {
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.875rem;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .btn-sm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .resend-container {
+    margin-top: var(--space-6);
+    text-align: center;
+  }
+  .error-msg {
+    color: red;
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+  .success-msg {
+    color: green;
+    margin-top: var(--space-2);
+    font-size: 0.875rem;
+  }
+  .hidden {
+    display: none !important;
+  }
+  .status-badge {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    background-color: #fef08a; /* yellow-200 */
+    color: #854d0e; /* yellow-800 */
+    border-radius: var(--radius-xl);
+    font-weight: bold;
+    margin-top: var(--space-4);
+  }
+  .text-center {
+    text-align: center;
+  }
+</style>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const applicationId = urlParams.get('applicationId');
+
+  if (!applicationId) {
+    window.location.href = '/join-us/apply';
+  }
+
+  const verifyForm = document.getElementById('verify-form');
+  const verifyBtn = document.getElementById('verify-btn');
+  const verifyError = document.getElementById('verify-error');
+  const resendBtn = document.getElementById('resend-btn');
+  const resendMsg = document.getElementById('resend-msg');
+  const resendError = document.getElementById('resend-error');
+  const verifyFormContainer = document.getElementById('verify-form-container');
+  const successContainer = document.getElementById('success-container');
+
+  let cooldown = 60;
+  let cooldownTimer;
+
+  function startCooldown() {
+    cooldown = 60;
+    resendBtn.disabled = true;
+    cooldownTimer = setInterval(() => {
+      cooldown--;
+      resendBtn.textContent = `Resend Code (${cooldown}s)`;
+      if (cooldown <= 0) {
+        clearInterval(cooldownTimer);
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend Code';
+      }
+    }, 1000);
+  }
+
+  startCooldown();
+
+  verifyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Verifying...';
+    verifyError.classList.add('hidden');
+
+    const otp = document.getElementById('otp').value;
+
+    try {
+      const res = await fetch('/api/membership/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId, otp })
+      });
+      
+      const result = await res.json();
+      
+      if (res.ok) {
+        verifyFormContainer.classList.add('hidden');
+        successContainer.classList.remove('hidden');
+      } else {
+        verifyError.textContent = result.error || 'Verification failed.';
+        verifyError.classList.remove('hidden');
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify OTP';
+      }
+    } catch (err) {
+      verifyError.textContent = 'Network error.';
+      verifyError.classList.remove('hidden');
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Verify OTP';
+    }
+  });
+
+  resendBtn.addEventListener('click', async () => {
+    resendBtn.disabled = true;
+    resendMsg.classList.add('hidden');
+    resendError.classList.add('hidden');
+
+    try {
+      const res = await fetch('/api/membership/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId })
+      });
+      
+      const result = await res.json();
+      
+      if (res.ok) {
+        resendMsg.classList.remove('hidden');
+        startCooldown();
+      } else {
+        resendError.textContent = result.error || 'Failed to resend.';
+        resendError.classList.remove('hidden');
+        resendBtn.disabled = false;
+      }
+    } catch (err) {
+      resendError.textContent = 'Network error.';
+      resendError.classList.remove('hidden');
+      resendBtn.disabled = false;
+    }
+  });
+</script>

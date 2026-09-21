@@ -1,0 +1,327 @@
+---
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../../services/auth/admin';
+import { db } from '../../../../db';
+import { applications } from '../../../../db/schema';
+import { eq } from 'drizzle-orm';
+
+const token = Astro.cookies.get('admin_session')?.value;
+if (!token) return Astro.redirect('/admin/login');
+const admin = await verifyAdminSession(token);
+if (!admin) return Astro.redirect('/admin/login');
+
+const { id } = Astro.params;
+const application = db.select().from(applications).where(eq(applications.id, id as string)).get();
+
+if (!application) {
+  return Astro.redirect('/admin/applications');
+}
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'PENDING_REVIEW': return 'badge-warning';
+    case 'APPROVED': return 'badge-success';
+    case 'REJECTED': return 'badge-danger';
+    case 'PENDING_EMAIL_VERIFICATION': return 'badge-neutral';
+    default: return 'badge-neutral';
+  }
+}
+---
+
+<AdminLayout title={`Application - ${application.name}`}>
+  <div class="page-header">
+    <div class="header-actions">
+      <a href="/admin/applications" class="btn btn-secondary">Back to List</a>
+    </div>
+    <h1>Application Details</h1>
+    <div class="header-status">
+      <span class={`badge ${getStatusColor(application.status)}`}>{application.status}</span>
+      <span class="text-sm text-light">ID: {application.id}</span>
+    </div>
+  </div>
+
+  <div class="details-grid">
+    <div class="card">
+      <h3>Personal Information</h3>
+      <div class="detail-row"><span>Name:</span> <strong>{application.name}</strong></div>
+      <div class="detail-row"><span>Student ID:</span> <strong>{application.student_id}</strong></div>
+      <div class="detail-row"><span>University Email:</span> <strong>{application.university_email}</strong></div>
+      <div class="detail-row"><span>Personal Email:</span> <strong>{application.personal_email || '-'}</strong></div>
+      <div class="detail-row"><span>Phone:</span> <strong>{application.phone}</strong></div>
+    </div>
+
+    <div class="card">
+      <h3>Academic Information</h3>
+      <div class="detail-row"><span>Department:</span> <strong>{application.department}</strong></div>
+      <div class="detail-row"><span>Batch:</span> <strong>{application.batch}</strong></div>
+      <div class="detail-row"><span>Current Semester:</span> <strong>{application.current_semester}</strong></div>
+      <div class="detail-row"><span>Expected Graduation:</span> <strong>{application.expected_graduation_year}</strong></div>
+      <div class="detail-row"><span>Current CGPA:</span> <strong>{application.cgpa_current || '-'}</strong></div>
+      <div class="detail-row"><span>Desired CGPA:</span> <strong>{application.cgpa_desired || '-'}</strong></div>
+    </div>
+    
+    <div class="card full-width">
+      <h3>Interests & Skills</h3>
+      <div class="detail-row"><span>Academic Interests:</span> <strong>{(application.academic_interests as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Technical Skills:</span> <strong>{(application.technical_skills as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Tech Skill Level:</span> <strong>{application.technical_skill_level || '-'}</strong></div>
+      <div class="detail-row"><span>Strongest Tech Skill:</span> <strong>{application.strongest_technical_skill || '-'}</strong></div>
+      <div class="detail-row"><span>Creative/Media Skills:</span> <strong>{(application.creative_media_skills as string[] || []).join(', ') || 'None'}</strong></div>
+    </div>
+
+    <div class="card full-width">
+      <h3>Goals & Experience</h3>
+      <div class="detail-row"><span>Goals:</span> <strong>{(application.goals as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Previous Experience:</span> <strong>{(application.previous_experience as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Club Contribution:</span> <strong>{(application.club_contributions as string[] || []).join(', ') || 'None'}</strong></div>
+      <div class="detail-row"><span>Additional Info:</span> <strong>{application.additional_information || '-'}</strong></div>
+    </div>
+
+    <div class="card full-width payment-card">
+      <h3>Payment Information <span class="badge badge-warning">Pending Manual Verification</span></h3>
+      <div class="detail-row"><span>bKash Number:</span> <strong>{application.bkash_number}</strong></div>
+      <div class="detail-row"><span>Transaction ID:</span> <strong>{application.transaction_id}</strong></div>
+      <div class="detail-row"><span>Transaction Ref:</span> <strong>{application.transaction_reference}</strong></div>
+    </div>
+  </div>
+
+  {application.status === 'PENDING_REVIEW' && (
+    <div class="action-card card">
+      <h3>Review Actions</h3>
+      <p>Approve or reject this application.</p>
+      <div class="actions-flex">
+        <button type="button" class="btn btn-success" id="btn-approve">Approve</button>
+        <button type="button" class="btn btn-danger" id="btn-reject">Reject</button>
+      </div>
+      <div id="action-error" class="error-msg hidden"></div>
+    </div>
+  )}
+
+  <!-- Modals -->
+  <div id="approve-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Approve Membership?</h2>
+      <p>A unique Member ID will be generated. The applicant will become an Active Member, and a Member Confirmation email will be sent through Resend.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary cancel-modal">Cancel</button>
+        <button class="btn btn-success confirm-approve">Approve & Create Member</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reject-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Reject Application</h2>
+      <div class="form-group">
+        <label for="rejection-reason">Reason for rejection *</label>
+        <textarea id="rejection-reason" rows="3" required></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary cancel-modal">Cancel</button>
+        <button class="btn btn-danger confirm-reject">Reject Application</button>
+      </div>
+    </div>
+  </div>
+
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--space-6);
+  }
+  .header-actions {
+    margin-bottom: var(--space-4);
+  }
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+  .card {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+  }
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .details-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .full-width {
+      grid-column: span 2;
+    }
+  }
+  h3 {
+    margin-bottom: var(--space-4);
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .detail-row {
+    margin-bottom: var(--space-2);
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 600px) {
+    .detail-row {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+  .detail-row span {
+    color: var(--color-text-light);
+  }
+  
+  .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-warning { background-color: #fef08a; color: #854d0e; }
+  .badge-success { background-color: #bbf7d0; color: #166534; }
+  .badge-danger { background-color: #fecaca; color: #991b1b; }
+  .badge-neutral { background-color: #e2e8f0; color: #334155; }
+  
+  .text-sm { font-size: 0.875rem; }
+  .text-light { color: var(--color-text-light); }
+  
+  .action-card {
+    text-align: center;
+    border: 2px solid var(--color-primary);
+  }
+  .actions-flex {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+  .btn-success { background-color: #16a34a; color: white; }
+  .btn-danger { background-color: #dc2626; color: white; }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-content {
+    background: white;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 500px;
+  }
+  .modal-content h2 {
+    margin-bottom: var(--space-4);
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-4);
+  }
+  .form-group label {
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+  }
+  .form-group textarea {
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .hidden { display: none !important; }
+  .error-msg { color: red; margin-top: var(--space-4); }
+</style>
+
+<script>
+  const applicationId = window.location.pathname.split('/').pop();
+  
+  const btnApprove = document.getElementById('btn-approve');
+  const btnReject = document.getElementById('btn-reject');
+  const modalApprove = document.getElementById('approve-modal');
+  const modalReject = document.getElementById('reject-modal');
+  const actionError = document.getElementById('action-error');
+  const cancelBtns = document.querySelectorAll('.cancel-modal');
+  
+  if (btnApprove && btnReject) {
+    btnApprove.addEventListener('click', () => modalApprove.classList.remove('hidden'));
+    btnReject.addEventListener('click', () => modalReject.classList.remove('hidden'));
+    
+    cancelBtns.forEach(btn => btn.addEventListener('click', () => {
+      modalApprove.classList.add('hidden');
+      modalReject.classList.add('hidden');
+    }));
+
+    document.querySelector('.confirm-approve').addEventListener('click', async (e) => {
+      const btn = e.target as HTMLButtonElement;
+      btn.disabled = true;
+      btn.textContent = 'Approving...';
+      
+      try {
+        const res = await fetch(`/api/admin/applications/${applicationId}/approve`, { method: 'POST' });
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Approval failed');
+          btn.disabled = false;
+          btn.textContent = 'Approve & Create Member';
+          modalApprove.classList.add('hidden');
+        }
+      } catch (err) {
+        alert('Network error');
+        btn.disabled = false;
+        btn.textContent = 'Approve & Create Member';
+      }
+    });
+
+    document.querySelector('.confirm-reject').addEventListener('click', async (e) => {
+      const reason = (document.getElementById('rejection-reason') as HTMLTextAreaElement).value;
+      if (!reason) return alert('Reason is required');
+
+      const btn = e.target as HTMLButtonElement;
+      btn.disabled = true;
+      btn.textContent = 'Rejecting...';
+      
+      try {
+        const res = await fetch(`/api/admin/applications/${applicationId}/reject`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason })
+        });
+        if (res.ok) {
+          window.location.reload();
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Rejection failed');
+          btn.disabled = false;
+          btn.textContent = 'Reject Application';
+          modalReject.classList.add('hidden');
+        }
+      } catch (err) {
+        alert('Network error');
+        btn.disabled = false;
+        btn.textContent = 'Reject Application';
+      }
+    });
+  }
+</script>

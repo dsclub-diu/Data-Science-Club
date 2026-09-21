@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { verifyAdminSession } from '../../services/auth/admin';
+
+const token = Astro.cookies.get('admin_session')?.value;
+if (token) {
+  const admin = await verifyAdminSession(token);
+  if (admin) {
+    return Astro.redirect('/admin');
+  }
+}
+---
+
+<Layout title="Admin Login">
+  <section class="login-section">
+    <div class="container">
+      <div class="login-card">
+        <h2>Admin Login</h2>
+        <form id="admin-login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <div id="login-error" class="error-msg hidden"></div>
+          <button type="submit" id="login-btn" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+  }
+  .login-card {
+    background: var(--color-bg-alt);
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .login-card h2 {
+    margin-bottom: var(--space-6);
+    text-align: center;
+  }
+  .form-group {
+    margin-bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+  }
+  .form-group input {
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+  }
+  .btn-block {
+    width: 100%;
+    padding: var(--space-3);
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .error-msg {
+    color: red;
+    margin-bottom: var(--space-4);
+    text-align: center;
+    font-size: 0.875rem;
+  }
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('admin-login-form');
+  const loginBtn = document.getElementById('login-btn');
+  const loginError = document.getElementById('login-error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Signing in...';
+    loginError.classList.add('hidden');
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const result = await res.json();
+      
+      if (res.ok) {
+        window.location.href = '/admin';
+      } else {
+        loginError.textContent = result.error || 'Login failed.';
+        loginError.classList.remove('hidden');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    } catch (err) {
+      loginError.textContent = 'Network error.';
+      loginError.classList.remove('hidden');
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Sign In';
+    }
+  });
+</script>
