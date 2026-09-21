@@ -1,7 +1,8 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const applications = sqliteTable('applications', {
   id: text('id').primaryKey(),
+  application_reference: text('application_reference').notNull(),
   name: text('name').notNull(),
   student_id: text('student_id').notNull(),
   university_email: text('university_email').notNull(),
@@ -25,6 +26,7 @@ export const applications = sqliteTable('applications', {
   bkash_number: text('bkash_number'),
   transaction_id: text('transaction_id'),
   transaction_reference: text('transaction_reference'),
+  email_verified_at: integer('email_verified_at', { mode: 'timestamp' }),
   
   status: text('status').notNull().default('DRAFT'), // DRAFT, PENDING_EMAIL_VERIFICATION, PENDING_REVIEW, APPROVED, REJECTED
   
@@ -34,7 +36,9 @@ export const applications = sqliteTable('applications', {
   rejection_reason: text('rejection_reason'),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updated_at: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-});
+}, (table) => ({
+  applicationReferenceUnique: uniqueIndex('applications_application_reference_unique').on(table.application_reference),
+}));
 
 export const otps = sqliteTable('otps', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -51,7 +55,12 @@ export const members = sqliteTable('members', {
   application_id: text('application_id').notNull().references(() => applications.id),
   status: text('status').notNull().default('ACTIVE'), // ACTIVE
   joined_at: integer('joined_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-});
+  confirmation_email_status: text('confirmation_email_status').notNull().default('PENDING'),
+  confirmation_email_error: text('confirmation_email_error'),
+  confirmation_email_sent_at: integer('confirmation_email_sent_at', { mode: 'timestamp' }),
+}, (table) => ({
+  applicationUnique: uniqueIndex('members_application_id_unique').on(table.application_id),
+}));
 
 export const admins = sqliteTable('admins', {
   id: integer('id').primaryKey({ autoIncrement: true }),

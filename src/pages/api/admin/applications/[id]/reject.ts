@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
     }).where(eq(applications.id, id)).run();
 
     // Send Rejection Email
-    await sendRejectionEmail(application.university_email, application.name, reason);
+    await sendRejectionEmail(application.university_email, application.name, reason, application.application_reference);
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
 

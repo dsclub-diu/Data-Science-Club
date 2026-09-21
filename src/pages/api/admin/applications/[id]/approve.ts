@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '../../../../../db';
 import { applications, members } from '../../../../../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { sendApprovalEmail } from '../../../../../services/email/resend';
 import { verifyAdminSession } from '../../../../../services/auth/admin';
 
@@ -22,6 +22,10 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
       return new Response(JSON.stringify({ error: 'Application not found' }), { status: 404 });
     }
     
+    if (application.status === 'APPROVED') {
+      const existingMember = db.select().from(members).where(eq(members.application_id, id)).get();
+      return new Response(JSON.stringify({ success: true, memberId: existingMember?.id, alreadyApproved: true }), { status: 200 });
+    }
     if (application.status !== 'PENDING_REVIEW') {
       return new Response(JSON.stringify({ error: 'Application is not pending review' }), { status: 400 });
     }
@@ -29,8 +33,9 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
     // Generate unique Member ID
     // Simple format: DSC-YYYY-XXXX (where XXXX is a random or sequential number, sequential would require a counter table, let's use a random 4-digit number for simplicity in this phase)
     const currentYear = new Date().getFullYear();
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const memberId = `DSC-${currentYear}-${randomSuffix}`;
+    const memberPrefix = process.env.MEMBER_ID_PREFIX || 'DSC';
+    const nextNumber = (db.select({ count: sql<number>`count(*)` }).from(members).get()?.count || 0) + 1;
+    const memberId = `${memberPrefix}-${currentYear}-${String(nextNumber).padStart(4, '0')}`;
 
     // Transaction to ensure atomicity
     db.transaction((tx) => {
@@ -50,7 +55,7 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
     });
 
     // 3. Send Email
-    await sendApprovalEmail(application.university_email, {
+    const emailResult = await sendApprovalEmail(application.university_email, {
       name: application.name,
       memberId,
       studentId: application.student_id,
@@ -59,7 +64,12 @@ export const POST: APIRoute = async ({ params, request, cookies }) => {
       joinedAt: new Date().toLocaleDateString()
     });
 
-    return new Response(JSON.stringify({ success: true, memberId }), { status: 200 });
+    db.update(members).set({
+      confirmation_email_status: emailResult.success ? 'SENT' : 'FAILED',
+      confirmation_email_error: emailResult.success ? null : 'Unable to send confirmation email',
+      confirmation_email_sent_at: emailResult.success ? new Date() : null
+    }).where(eq(members.id, memberId)).run();
+    return new Response(JSON.stringify({ success: true, memberId, emailSent: emailResult.success }), { status: 200 });
 
   } catch (error) {
     console.error('Approve Error:', error);

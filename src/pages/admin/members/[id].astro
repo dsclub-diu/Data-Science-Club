@@ -1,8 +1,8 @@
 ---
-import AdminLayout from '../../../../layouts/AdminLayout.astro';
-import { verifyAdminSession } from '../../../../services/auth/admin';
-import { db } from '../../../../db';
-import { members, applications } from '../../../../db/schema';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../services/auth/admin';
+import { db } from '../../../db';
+import { members, applications } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
 const token = Astro.cookies.get('admin_session')?.value;
@@ -15,6 +15,8 @@ const memberData = db.select({
   id: members.id,
   status: members.status,
   joined_at: members.joined_at,
+  confirmation_email_status: members.confirmation_email_status,
+  confirmation_email_error: members.confirmation_email_error,
   application_id: members.application_id,
   name: applications.name,
   student_id: applications.student_id,
@@ -96,6 +98,7 @@ if (!memberData) {
 
     <div class="card full-width">
       <h3>Membership Information</h3>
+      <div class="detail-row"><span>Confirmation Email:</span> <strong>{memberData.confirmation_email_status}{memberData.confirmation_email_error ? ` - ${memberData.confirmation_email_error}` : ''}</strong></div>
       <div class="detail-row"><span>Application Ref:</span> <strong><a href={`/admin/applications/${memberData.application_id}`} class="btn-link">{memberData.application_id}</a></strong></div>
       <div class="detail-row"><span>Joined At:</span> <strong>{new Date(memberData.joined_at).toLocaleString()}</strong></div>
     </div>

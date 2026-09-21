@@ -3,7 +3,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { verifyAdminSession } from '../../../services/auth/admin';
 import { db } from '../../../db';
 import { applications } from '../../../db/schema';
-import { desc, eq, and, like } from 'drizzle-orm';
+import { desc, eq, and, like, or, sql } from 'drizzle-orm';
 
 const token = Astro.cookies.get('admin_session')?.value;
 if (!token) return Astro.redirect('/admin/login');
@@ -13,17 +13,30 @@ if (!admin) return Astro.redirect('/admin/login');
 const url = new URL(Astro.request.url);
 const statusFilter = url.searchParams.get('status');
 const searchFilter = url.searchParams.get('search');
+const departmentFilter = url.searchParams.get('department');
+const batchFilter = url.searchParams.get('batch');
+const graduationFilter = url.searchParams.get('graduation_year');
 
 let conditions = [];
 if (statusFilter) conditions.push(eq(applications.status, statusFilter));
-if (searchFilter) conditions.push(like(applications.name, `%${searchFilter}%`));
+if (searchFilter) conditions.push(or(
+  like(applications.name, `%${searchFilter}%`),
+  like(applications.student_id, `%${searchFilter}%`),
+  like(applications.university_email, `%${searchFilter}%`),
+  like(applications.application_reference, `%${searchFilter}%`)
+));
+if (departmentFilter) conditions.push(eq(applications.department, departmentFilter));
+if (batchFilter) conditions.push(eq(applications.batch, batchFilter));
+if (graduationFilter && /^\d{4}$/.test(graduationFilter)) {
+  conditions.push(eq(applications.expected_graduation_year, Number(graduationFilter)));
+}
 
 const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
 const appsList = db.select()
   .from(applications)
   .where(whereClause)
-  .orderBy(desc(applications.created_at))
+  .orderBy(sql`CASE WHEN ${applications.status} = 'PENDING_REVIEW' THEN 0 ELSE 1 END`, desc(applications.created_at))
   .all();
 
 function getStatusColor(status) {
@@ -44,7 +57,10 @@ function getStatusColor(status) {
 
   <div class="filter-bar card">
     <form class="filters">
-      <input type="text" name="search" placeholder="Search by name..." value={searchFilter || ''} />
+      <input type="text" name="search" placeholder="Search name, ID, email..." value={searchFilter || ''} />
+      <input type="text" name="department" placeholder="Department" value={departmentFilter || ''} />
+      <input type="text" name="batch" placeholder="Batch" value={batchFilter || ''} />
+      <input type="text" name="graduation_year" placeholder="Graduation year" inputmode="numeric" value={graduationFilter || ''} />
       <select name="status">
         <option value="">All Statuses</option>
         <option value="PENDING_REVIEW" selected={statusFilter === 'PENDING_REVIEW'}>Pending Review</option>
@@ -61,10 +77,13 @@ function getStatusColor(status) {
     <table class="table">
       <thead>
         <tr>
-          <th>ID / Name</th>
+          <th>Reference / Name</th>
           <th>Student ID</th>
           <th>Department</th>
           <th>Batch</th>
+          <th>University Email</th>
+          <th>Graduation</th>
+          <th>Payment</th>
           <th>Submitted</th>
           <th>Status</th>
           <th>Actions</th>
@@ -73,19 +92,22 @@ function getStatusColor(status) {
       <tbody>
         {appsList.length === 0 ? (
           <tr>
-            <td colspan="7" class="text-center py-4">No applications found.</td>
+            <td colspan="10" class="text-center py-4">No applications found.</td>
           </tr>
         ) : (
           appsList.map(app => (
             <tr>
               <td>
                 <div class="fw-bold">{app.name}</div>
-                <div class="text-sm text-light">{app.id}</div>
+                <div class="text-sm text-light">{app.application_reference}</div>
               </td>
               <td>{app.student_id}</td>
               <td>{app.department}</td>
               <td>{app.batch}</td>
-              <td>{new Date(app.created_at).toLocaleDateString()}</td>
+              <td>{app.university_email}</td>
+              <td>{app.expected_graduation_year}</td>
+              <td><span class="badge badge-neutral">Manual review</span></td>
+              <td>{new Date(app.submitted_at || app.created_at).toLocaleDateString()}</td>
               <td>
                 <span class={`badge ${getStatusColor(app.status)}`}>{app.status}</span>
               </td>

@@ -1,14 +1,16 @@
 import { Resend } from 'resend';
 import 'dotenv/config';
 
-// Initialize Resend (use a mock in development if no API key is provided)
+// Initialize Resend. Local development may use the explicit mock mode.
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const fromEmail = 'Data Science Club <noreply@datascienceclub.com>';
 
 export async function sendOtpEmail(to: string, otp: string) {
   if (!resend) {
-    console.log(`[EMAIL MOCK] Sent OTP ${otp} to ${to}`);
+    if (process.env.NODE_ENV === 'production') {
+      return { success: false, error: new Error('RESEND_API_KEY is not configured') };
+    }
     return { success: true };
   }
 
@@ -38,7 +40,9 @@ export async function sendOtpEmail(to: string, otp: string) {
 
 export async function sendApprovalEmail(to: string, memberDetails: { name: string, memberId: string, studentId: string, department: string, batch: string, joinedAt: string }) {
   if (!resend) {
-    console.log(`[EMAIL MOCK] Sent Approval to ${to} (Member ID: ${memberDetails.memberId})`);
+    if (process.env.NODE_ENV === 'production') {
+      return { success: false, error: new Error('RESEND_API_KEY is not configured') };
+    }
     return { success: true };
   }
 
@@ -73,9 +77,11 @@ export async function sendApprovalEmail(to: string, memberDetails: { name: strin
   }
 }
 
-export async function sendRejectionEmail(to: string, applicantName: string, reason: string) {
+export async function sendRejectionEmail(to: string, applicantName: string, reason: string, applicationReference?: string) {
   if (!resend) {
-    console.log(`[EMAIL MOCK] Sent Rejection to ${to} for reason: ${reason}`);
+    if (process.env.NODE_ENV === 'production') {
+      return { success: false, error: new Error('RESEND_API_KEY is not configured') };
+    }
     return { success: true };
   }
 
@@ -88,6 +94,7 @@ export async function sendRejectionEmail(to: string, applicantName: string, reas
         <h2>Hello ${applicantName},</h2>
         <p>Thank you for your interest in joining the Data Science Club.</p>
         <p>Unfortunately, we are unable to approve your application at this time.</p>
+        ${applicationReference ? `<p>Application reference: <strong>${applicationReference}</strong></p>` : ''}
         <p><strong>Reason:</strong> ${reason}</p>
         <p>If you have any questions, feel free to reply to this email.</p>
       `,

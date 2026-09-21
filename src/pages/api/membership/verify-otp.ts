@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
       .run();
 
     db.update(applications)
-      .set({ status: 'PENDING_REVIEW' })
+      .set({ status: 'PENDING_REVIEW', email_verified_at: new Date(), submitted_at: new Date(), updated_at: new Date() })
       .where(eq(applications.id, applicationId))
       .run();
 

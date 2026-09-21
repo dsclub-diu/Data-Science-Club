@@ -3,7 +3,10 @@ import * as jose from 'jose';
 import 'dotenv/config';
 
 // Fallback secret for local development if not provided in env
-const SECRET_KEY = process.env.SESSION_SECRET || 'super_secret_fallback_key_for_development_only';
+const SECRET_KEY = process.env.SESSION_SECRET;
+if (!SECRET_KEY && process.env.NODE_ENV === 'production') {
+  throw new Error('SESSION_SECRET must be configured in production');
+}
 const secret = new TextEncoder().encode(SECRET_KEY);
 
 export async function hashPassword(password: string): Promise<string> {
@@ -31,7 +34,7 @@ export async function verifyAdminSession(token: string) {
       return payload;
     }
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

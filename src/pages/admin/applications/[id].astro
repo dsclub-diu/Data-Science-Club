@@ -1,8 +1,8 @@
 ---
-import AdminLayout from '../../../../layouts/AdminLayout.astro';
-import { verifyAdminSession } from '../../../../services/auth/admin';
-import { db } from '../../../../db';
-import { applications } from '../../../../db/schema';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { verifyAdminSession } from '../../../services/auth/admin';
+import { db } from '../../../db';
+import { applications } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
 const token = Astro.cookies.get('admin_session')?.value;
@@ -36,7 +36,7 @@ function getStatusColor(status: string) {
     <h1>Application Details</h1>
     <div class="header-status">
       <span class={`badge ${getStatusColor(application.status)}`}>{application.status}</span>
-      <span class="text-sm text-light">ID: {application.id}</span>
+      <span class="text-sm text-light">Reference: {application.application_reference}</span>
     </div>
   </div>
 
@@ -78,7 +78,9 @@ function getStatusColor(status: string) {
     </div>
 
     <div class="card full-width payment-card">
-      <h3>Payment Information <span class="badge badge-warning">Pending Manual Verification</span></h3>
+      <h3>Payment Information <span class={`badge ${application.status === 'PENDING_REVIEW' ? 'badge-warning' : 'badge-neutral'}`}>
+        {application.status === 'PENDING_REVIEW' ? 'Pending Manual Verification' : application.status === 'APPROVED' ? 'Verified by Approval' : 'Not Approved'}
+      </span></h3>
       <div class="detail-row"><span>bKash Number:</span> <strong>{application.bkash_number}</strong></div>
       <div class="detail-row"><span>Transaction ID:</span> <strong>{application.transaction_id}</strong></div>
       <div class="detail-row"><span>Transaction Ref:</span> <strong>{application.transaction_reference}</strong></div>
